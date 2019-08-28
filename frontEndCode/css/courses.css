@@ -1,0 +1,69 @@
+.course-add {
+  position: absolute;
+  right: 15%;
+  top: 15%;
+  padding:2px;
+  color:#CA586D;
+}
+.course-add:hover {
+  color:#CB0D30;
+}
+.course-remove {
+  position: absolute;
+  right: 2%;
+  top: 15%;
+  padding:2px;
+  color:#429C41;
+}
+.course-remove:hover {
+  color:#C8D989;
+}
+
+.course-remove {
+  position: absolute;
+  right: 2%;
+  top: 15%;
+  padding:2px;
+  color: #C8D989;
+}
+.course-remove:hover {
+  color:#429C41;
+}
+
+.department-header-even {
+  position: relative;
+}
+.addSession {
+  margin-top: 3px;
+}
+.btn-add {
+  width: 100%;
+  color: #fff;
+  background-color: #CA586D;
+  border-color: #CA586D;
+}
+.btn-add:hover,
+.btn-add:active,
+.btn-add:focus {
+  background: #fae5f2;
+  color: #000;
+  border-color: #fae5f2;
+}
+.btn-remove {
+  width: 100%;
+  color: #666;
+  background-color: #fff;
+  border-color: #C8D989;
+}
+.btn-remove:hover,
+.btn-remove:active,
+.btn-remove:focus {
+  background: #C8D989;
+  color: #fff;
+  border-color: #C8D989;
+}
+
+.cal{
+  height: 800px;
+  /* display: none; */
+}
