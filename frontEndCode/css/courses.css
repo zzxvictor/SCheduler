@@ -74,6 +74,7 @@
   overflow: auto;
 }
 #calendarHeader{
+  display: block;
   text-align: center;
   padding:1%;
   cursor: move;

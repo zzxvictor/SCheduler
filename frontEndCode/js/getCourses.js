@@ -11,15 +11,27 @@ const addSessionButton =
 '<input type="submit" name="submit" value="Add to Scheduler" class="btn btn-add addtomycb col-xs-12 addSession"/>';
 const rmSessionButton =
   '<input type="submit" name="submit" value="Remove" class="btn btn-remove addtomycb col-xs-12 removeSession"/>';
-  const calendar = '<div id="calendar" class="cal"><div id="calendarHeader">Drag Me</div></div>';
+  const calendar = '<div id="calendar" class="cal"></div>';
 var courseList;
+var optimizedCourses;
+var calendarEvents;
 // map of course name with classInfoObj
 var unaddedSessions = {};
 var addedSessions = {};
 
+var weekday = new Array(7);
+weekday['S'] =  0;
+weekday['M'] = 1;
+weekday['T'] = 2;
+weekday['W'] = 3;
+weekday['Th'] = 4;
+weekday['F'] = 5;
+weekday['Sa'] = 6;
+
 if (
   !window.location.href.includes("/myCourseBin") &&
-  !window.location.href.includes("/Departments") &&  !window.location.href.includes("/Terms")
+  !window.location.href.includes("/Departments") &&  !window.location.href.includes("/Terms") &&
+  !window.location.href.includes("/myKCal")
 ) {
   updateCourseList();
   setTimeout(() => {
@@ -344,6 +356,18 @@ function updateCourseList() {
       courseList = result.courses;
     }
   });
+
+  // try to get course list in storage
+  chrome.storage.sync.get("optimizedCourses", function(result) {
+    //initialize map and save in storage
+    if (jQuery.isEmptyObject(result)) {
+      var optimized = courseList;
+      chrome.storage.sync.set({ optimizedCourses: optimized });
+      optimizedCourses = optimized;
+    } else {
+      optimizedCourses = result.optimizedCourses;
+    }
+  });
 }
 
 function addCourses() {
@@ -438,74 +462,27 @@ function closeCal(){
 function watchCal(){
   renderCal();
   openCal();
-  // closeCal();
 }
 
 function renderCal() {
   $(document).ready(function() {
     var calendarEl = document.getElementById("calendar");
-    dragCalendar();
-
+    console.log('optimzied',optimizedCourses)
+    parseCourseIntoEvents(optimizedCourses);
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: ["interaction", "dayGrid", "timeGrid"],
-      defaultView: "dayGridWeek",
+      defaultView: "timeGridWeek",
       defaultDate: new Date(),
       header: {
         left: "prev,next today",
         center: "title",
         right: "dayGridMonth,timeGridWeek,timeGridDay"
       },
-      events: [
-        {
-          title: "All Day Event",
-          start: "2019-08-01"
-        },
-        {
-          title: "Long Event",
-          start: "2019-08-07",
-          end: "2019-08-10"
-        },
-        {
-          groupId: "999",
-          title: "Repeating Event",
-          start: "2019-08-29T16:00:00"
-        },
-        {
-          groupId: "999",
-          title: "Repeating Event",
-          start: "2019-08-16T16:00:00"
-        },
-        {
-          title: "Conference",
-          start: "2019-08-11",
-          end: "2019-08-13"
-        },
-        {
-          title: "Meeting",
-          start: "2019-08-12T10:30:00",
-          end: "2019-08-12T12:30:00"
-        },
-        {
-          title: "Lunch",
-          start: "2019-08-12T12:00:00"
-        },
-        {
-          title: "Meeting",
-          start: "2019-08-12T14:30:00"
-        },
-        {
-          title: "Birthday Party",
-          start: "2019-08-13T07:00:00"
-        },
-        {
-          title: "Click for Google",
-          url: "http://google.com/",
-          start: "2019-08-28"
-        }
-      ]
+      height:$(window).height()*0.30,
+      events: calendarEvents
     });
-
     calendar.render();
+    dragCalendar();
   });
 
   $("body")
@@ -534,10 +511,73 @@ function renderCal() {
     //     }
     // });
     });
+}
+
+// parse courseList into 
+function parseCourseIntoEvents(list){
+  calendarEvents = [];
+  var curr = new Date; // get current date
+  var first = curr.getDate() - curr.getDay(); // get first day of the week (Sunday)
+  for(let course in list){
+    if(list.hasOwnProperty(course)){
+      let info = list[course];
+      // get date for the events
+      let days = [];
+      let daysStr = info.days;
+      if(daysStr.includes('M')){
+        days.push(weekday['M']);
+        daysStr = daysStr.slice(1);
+      }
+      if(daysStr.includes('T')){
+        days.push(weekday['T']);
+        daysStr = daysStr.slice(1);
+      }
+      if(daysStr.includes('W')){
+        days.push(weekday['W']);
+        daysStr = daysStr.slice(1);
+      }
+      if(daysStr.includes('Th')){
+        days.push(weekday['Th']);
+        daysStr = daysStr.slice(2);
+      }
+      if(daysStr.includes('F')){
+        days.push(weekday['F']);
+        daysStr = daysStr.slice(1);
+      }
+      let id = info.ID;
+      let title = info.course;
+      let duration = info.time.split('-');
+      let start = duration[0];
+      let end = duration[1];
+
+      days.forEach(function(day) {
+        let currDate = new Date(curr.setDate(first+day));
+        let sParts = start.match(/(\d+)\:(\d+)(\w+)/);
+        let sHours = /am/i.test(sParts[3]) || sParts[1] == 12? parseInt(sParts[1]) : parseInt(sParts[1]) + 12;
+        let sMinutes = parseInt(sParts[2]);
+        let eParts = end.match(/(\d+)\:(\d+)(\w+)/);
+        let eHours = /am/i.test(eParts[3]) || eParts[1] == 12? parseInt(eParts[1]) : parseInt(eParts[1]) + 12;
+        let eMinutes = parseInt(eParts[2]);
+        let startDate = new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), sHours, sMinutes, 0, 0)
+        let endDate = new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), eHours, eMinutes, 0, 0)
+        let event = {
+          id: `${id}`,
+          title: `${title}`,
+          start: `${startDate.toISOString()}`,
+          end: `${endDate.toISOString()}`,
+          overlap: true,
+          allDay: false
+        }
+        calendarEvents.push(event);
+      });
+    }
   }
+}
 
 function dragCalendar(){
   let calendarEl = document.getElementById('calendar');
+  // append drag header to calendar
+  $('.fc-toolbar').prepend('<div id="calendarHeader">Drag Me</div>')
   // function for dragging calendar with mouse
   if (document.getElementById('calendarHeader')) {
     /* if present, the header is where you move the DIV from:*/
