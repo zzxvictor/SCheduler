@@ -64,6 +64,18 @@
 }
 
 .cal{
-  height: 800px;
-  /* display: none; */
+  display:none;
+  position: absolute;
+  z-index: 9;
+  background-color: #f1f1f1;
+  text-align: center;
+  border: 1px solid #d3d3d3;
+  resize: both;
+  overflow: auto;
+}
+#calendarHeader{
+  text-align: center;
+  padding:1%;
+  cursor: move;
+  z-index: 10;
 }

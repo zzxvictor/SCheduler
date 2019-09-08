@@ -11,7 +11,7 @@ const addSessionButton =
 '<input type="submit" name="submit" value="Add to Scheduler" class="btn btn-add addtomycb col-xs-12 addSession"/>';
 const rmSessionButton =
   '<input type="submit" name="submit" value="Remove" class="btn btn-remove addtomycb col-xs-12 removeSession"/>';
-  const calendar = '<div id="calendar" class="cal"></div>';
+  const calendar = '<div id="calendar" class="cal"><div id="calendarHeader">Drag Me</div></div>';
 var courseList;
 // map of course name with classInfoObj
 var unaddedSessions = {};
@@ -19,7 +19,7 @@ var addedSessions = {};
 
 if (
   !window.location.href.includes("/myCourseBin") &&
-  !window.location.href.includes("/Departments")
+  !window.location.href.includes("/Departments") &&  !window.location.href.includes("/Terms")
 ) {
   updateCourseList();
   setTimeout(() => {
@@ -28,7 +28,7 @@ if (
     removeClassHelper();
     addCourses();
     removeCourses();
-    openCal();
+    watchCal();
   }, 500);
 }
 
@@ -411,9 +411,40 @@ function removeCourses() {
   });
 }
 
-function openCal() {
+function openCal(){
+  $('.open-cal').each(function(){
+    $(this).click(function(e){
+      $(this).removeClass('open-cal');
+      $(this).addClass('close-cal');
+      $(this).html('Close SCheduler');
+      $('#calendar').css('display','block');
+      closeCal();
+    })
+  })
+}
+
+function closeCal(){
+  $('.close-cal').each(function(){
+    $(this).click(function(e){
+      $(this).removeClass('close-cal');
+      $(this).addClass('open-cal');
+      $(this).html('Open SCheduler');
+      $('#calendar').css('display','none');
+      openCal();
+    })
+  })
+}
+// watch calendar activities
+function watchCal(){
+  renderCal();
+  openCal();
+  // closeCal();
+}
+
+function renderCal() {
   $(document).ready(function() {
     var calendarEl = document.getElementById("calendar");
+    dragCalendar();
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: ["interaction", "dayGrid", "timeGrid"],
@@ -478,7 +509,7 @@ function openCal() {
   });
 
   $("body")
-    .find(".open-cal")
+  .find(".run-cal")
     .click(function() {
       let data = [];
       for(let course in courseList){
@@ -488,7 +519,7 @@ function openCal() {
       }
       data = JSON.stringify(data);
       console.log(data)
-    //   // ajax call to backend
+      //   // ajax call to backend
     //   $.ajax({
     //     url : '',
     //     type : 'POST',
@@ -503,4 +534,45 @@ function openCal() {
     //     }
     // });
     });
+  }
+
+function dragCalendar(){
+  let calendarEl = document.getElementById('calendar');
+  // function for dragging calendar with mouse
+  if (document.getElementById('calendarHeader')) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById('calendarHeader').onmousedown = dragMouseDown;
+  }
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  // calendarEl.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    calendarEl.style.top = (calendarEl.offsetTop - pos2) + "px";
+    calendarEl.style.left = (calendarEl.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
 }
