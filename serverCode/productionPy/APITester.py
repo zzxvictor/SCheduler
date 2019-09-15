@@ -2,6 +2,7 @@ import requests, json
 from library import scheduler
 import time, numpy as np
 import matplotlib.pyplot as plt 
+from pprint import pprint
 with open ('mock.json', 'r') as handle:
 	mockData = json.load(handle)
 
@@ -25,8 +26,12 @@ for i in range (1000):
 plt.hist(bootstrap, bins = 10)
 '''
 # visualize returned schedule
-r = requests.post('http://127.0.0.1:5000', json=payload)
+#pprint(payload)
+r = requests.post('http://18.218.209.91', json=payload)
 schedules = r.json()['schedules']
-for i in range (3):
-    painter = scheduler.printSchedule()
-    painter.show_schedule(schedules[i][0])
+for lecLayout in schedules:
+    print ("num of discussion layout: ", len(lecLayout))
+pprint (schedules[0][0])
+#for i in range (3):
+#    painter = scheduler.printSchedule()
+#    painter.show_schedule(schedules[i][0])

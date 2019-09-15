@@ -1,0 +1,130 @@
+How to get data:
+POST with payload in this format:
+ 'constraint': 
+	{'avoidTime': [()], 'unit': 17},
+ 'course': [
+            {'must have': False,
+             'name': 'CSCI467',
+             'prefer': True,
+             'session': [{'ID': '30277',
+                          'instructor': 'Rajati, Mohammad Reza',
+                          'isFull': False,
+                          'must have': False,
+                          'prefer': False,
+                          'time': '02:00pm-03:20pm, MW',
+                          'type': 'Lec'},
+                         {'ID': '30278',
+                          'instructor': '',
+                          'isFull': False,
+                          'must have': False,
+                          'prefer': True,
+                          'time': '04:00pm-05:50pm, M',
+                          'type': 'Dis'},
+                         {'ID': '30279',
+                          'instructor': '',
+                          'isFull': False,
+                          'must have': True,
+                          'prefer': False,
+                          'time': '04:00pm-05:50pm, T',
+                          'type': 'Dis'}],
+             'unit': 4},
+            {'must have': False,
+             'name': 'ENGR100',
+             'prefer': False,
+             'session': [{'ID': '28501',
+                          'instructor': '',
+                          'isFull': False,
+                          'must have': False,
+                          'prefer': False,
+                          'time': '01:00pm-01:50pm, F',
+                          'type': 'Lec'}],
+             'unit': 1},
+            {'must have': False,
+             'name': 'EE588',
+             'prefer': True,
+             'session': [{'ID': '30999',
+                          'instructor': 'Soltanolkotabi, Mahdi',
+                          'isFull': False,
+                          'must have': False,
+                          'prefer': False,
+                          'time': '03:30pm-05:20pm, MW',
+                          'type': 'Lec'},
+                         {'ID': '31002',
+                          'instructor': '',
+                          'isFull': False,
+                          'must have': False,
+                          'prefer': False,
+                          'time': 'TBA',
+                          'type': 'Dis'}],
+             'unit': 4}
+             ]
+}
+
+Response data
+{
+	'sucess': YES,
+	'schedules': # a list of lists
+		[
+			# eah list has the same lecture sessions with different 
+			# discussion, quiz, lab time
+			[], # lecture format 1
+			[], # lecture format 2
+			[], ...
+			[	# lecture format i
+				[], # schedule 1
+				[], # schedule 2
+				[], # schedule n
+				[
+					 {'name': 'CSCI201',
+					  'session': {'ID': '30303',
+					              'instructor': 'Grujic, Olivera',
+					              'isFull': False,
+					              'must have': False,
+					              'prefer': True,
+					              'score': 0.10026427307229635,
+					              'time': '08:00am-09:20am, TTh',
+					              'timeNumeric': [[114, 122], [318, 326]],
+					              'type': 'Lec'},
+					  'unit': 4},
+
+					 {'name': 'CSCI467',
+					  'session': {'ID': '30279',
+					              'instructor': '',
+					              'isFull': False,
+					              'must have': True,
+					              'prefer': False,
+					              'score': 1.1520709099893782,
+					              'time': '04:00pm-05:50pm, T',
+					              'timeNumeric': [[162, 173]],
+					              'type': 'Dis'},
+					  'unit': 4},
+					 {'name': 'CSCI201',
+					  'session': {'ID': '30239',
+					              'instructor': '',
+					              'isFull': False,
+					              'must have': False,
+					              'prefer': False,
+					              'score': 1.1520709099893782,
+					              'time': '10:00am-11:50am, W',
+					              'timeNumeric': [[228, 239]],
+					              'type': 'Lab'},
+					  'unit': 4},
+					 {'name': 'CSCI201',
+					  'session': {'ID': '30028',
+					              'instructor': '',
+					              'isFull': False,
+					              'must have': False,
+					              'prefer': False,
+					              'score': 1.0620709099893784,
+					              'time': '',
+					              'timeNumeric': [],
+					              'type': 'Quiz'},
+					  'unit': 4},
+				]
+			]
+
+		]
+}
+
+
+
