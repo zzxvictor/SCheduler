@@ -1,5 +1,6 @@
 from flask import Flask, request,jsonify
 from library import scheduler
+from waitress import serve
 app = Flask(__name__)
 
 
@@ -18,4 +19,4 @@ def post():
 if __name__ == '__main__':
 	scorer = scheduler.fixedScoreGenerator('.')
 	engine = scheduler.greedySearch()
-	app.run(host='0.0.0.0', port=80)
+	serve(app, host='0.0.0.0', port=80)
