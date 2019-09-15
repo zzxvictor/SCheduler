@@ -18,4 +18,4 @@ def post():
 if __name__ == '__main__':
 	scorer = scheduler.fixedScoreGenerator('.')
 	engine = scheduler.greedySearch()
-	app.run(debug=False)
+	app.run(host='0.0.0.0', port=80)
