@@ -478,8 +478,10 @@ function renderCal() {
         center: "title",
         right: "dayGridMonth,timeGridWeek,timeGridDay"
       },
-      height:$(window).height()*0.30,
-      events: calendarEvents
+      height:$(window).height()*0.20,
+      events: calendarEvents,
+      minTime: '08:00:00',
+      maxTime: '22:00:00',
     });
     calendar.render();
     dragCalendar();
@@ -549,6 +551,8 @@ function parseCourseIntoEvents(list){
       let duration = info.time.split('-');
       let start = duration[0];
       let end = duration[1];
+      let instruct = info.instr + ' ';
+      let type = info.type;
 
       days.forEach(function(day) {
         let currDate = new Date(curr.setDate(first+day));
@@ -566,7 +570,8 @@ function parseCourseIntoEvents(list){
           start: `${startDate.toISOString()}`,
           end: `${endDate.toISOString()}`,
           overlap: true,
-          allDay: false
+          allDay: false,
+          description: `${instruct} + ${type}`
         }
         calendarEvents.push(event);
       });
