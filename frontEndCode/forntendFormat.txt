@@ -1,0 +1,62 @@
+How to send data:
+POST request in this format:
+Need to add other filter!
+  'constraint': 
+    {'avoidTime': [()], 'unit': 17},
+  'course': {
+    30211:{
+      ID: "30211"
+      course: "CSCI100 xg"
+      dClearance: "R"
+      days: "TTh"
+      instr: "Raghavachary, Sathyanaraya"
+      loc: "VPD105"
+      seats: " 26 of 60"
+      time: "11:00am-12:20pm"
+      type: "Lecture"
+      units: "4.0"
+    },
+    30212:{
+      ID: "30212"
+      course: "CSCI100 xg"
+      dClearance: "R"
+      days: "W"
+      instr: ""
+      loc: "SAL109"
+      seats: " 18 of 30"
+      time: "12:00pm-12:50pm"
+      type: "Lab"
+      units: "0.0"
+    }
+  }
+
+Receive data (display on calendar):
+(in array format with index)
+Pass back any additional fields does not matter
+as long as all required fields are passed back.
+'course': [
+    {
+      ID: "30211"
+      course: "CSCI100 xg"
+      dClearance: "R"
+      days: "TTh"
+      instr: "Raghavachary, Sathyanaraya"
+      loc: "VPD105"
+      seats: " 26 of 60"
+      time: "11:00am-12:20pm"
+      type: "Lecture"
+      units: "4.0"
+    },
+    {
+      ID: "30212"
+      course: "CSCI100 xg"
+      dClearance: "R"
+      days: "W"
+      instr: ""
+      loc: "SAL109"
+      seats: " 18 of 30"
+      time: "12:00pm-12:50pm"
+      type: "Lab"
+      units: "0.0"
+    }
+]
