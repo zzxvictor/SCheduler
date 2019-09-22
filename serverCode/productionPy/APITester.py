@@ -27,11 +27,13 @@ plt.hist(bootstrap, bins = 10)
 '''
 # visualize returned schedule
 #pprint(payload)
-r = requests.post('http://18.218.209.91', json=payload)
-schedules = r.json()['schedules']
-for lecLayout in schedules:
-    print ("num of discussion layout: ", len(lecLayout))
-pprint (schedules[0][0])
+#r = requests.post('https://68.180.70.24/', json=payload, verify = False)
+#schedules = r.json()['schedules']
+#for lecLayout in schedules:
+#    print ("num of discussion layout: ", len(lecLayout))
+#pprint (schedules[0][0])
 #for i in range (3):
 #    painter = scheduler.printSchedule()
 #    painter.show_schedule(schedules[i][0])
+r = requests.get('https://68.180.70.24/hello', verify = False)
+print (r.text)
