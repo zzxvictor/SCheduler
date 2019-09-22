@@ -17,6 +17,8 @@ def post():
 		return jsonify({'schedules':[], 'success':0})
 
 if __name__ == '__main__':
-	scorer = scheduler.fixedScoreGenerator('.')
-	engine = scheduler.greedySearch()
-	serve(app, host='0.0.0.0', port=80)
+    scorer = scheduler.fixedScoreGenerator('.')
+    engine = scheduler.greedySearch()
+	#serve(app, host='0.0.0.0', port=80)
+    app.run (host='0.0.0.0',debug = True, port=80, ssl_context='adhoc')
+
