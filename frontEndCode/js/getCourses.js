@@ -5,13 +5,14 @@
 "use strict";
 //reserve space for add buttons for sessions and courses
 const calendarButton = '<button class="open-cal">Open SCheduler</button>';
+const requestButton = '<button class="run-cal">Request SCheduler</button>';
 const addCourseButton = '<a><p class="course-add">Add the course</p></a>';
 const rmCourseButton = '<a><p class="course-remove">Remove the course</p></a>';
 const addSessionButton =
 '<input type="submit" name="submit" value="Add to Scheduler" class="btn btn-add addtomycb col-xs-12 addSession"/>';
 const rmSessionButton =
-  '<input type="submit" name="submit" value="Remove" class="btn btn-remove addtomycb col-xs-12 removeSession"/>';
-  const calendar = '<div id="calendar" class="cal"></div>';
+'<input type="submit" name="submit" value="Remove" class="btn btn-remove addtomycb col-xs-12 removeSession"/>';
+const calendar = '<div id="calendar" class="cal"></div>';
 var courseList;
 var optimizedCourses;
 var calendarEvents;
@@ -84,6 +85,10 @@ function addButtons() {
     .find("h2")
     .parent()
     .append(calendarButton);
+  $("body")
+  .find("h2")
+  .parent()
+  .append(requestButton);
   $("body")
     .find("h2")
     .parent()
@@ -485,34 +490,74 @@ function renderCal() {
     });
     calendar.render();
     dragCalendar();
+    $("body")
+    .find(".run-cal")
+      .click(function() {
+        let data = [];
+        // add constraint filter
+        data['constraint'] = {};
+        let constraintObj = {};
+        constraintObj['avoidTime'] = [];
+        constraintObj['unit'] = 18;
+        data['constraint'] = constraintObj;
+        data['course'] = [];
+        let courseObj = data['course'];
+        let courseToSessionMap = [];
+        // make course to session object map
+        for(let course in courseList){
+          if(courseList.hasOwnProperty(course)){
+            let sessionObj = courseList[course];
+            let courseName = sessionObj['course'];
+            let courseUnit = sessionObj['units'];
+            if(!courseToSessionMap.hasOwnProperty(courseName)){
+              let tempObj = [];
+              tempObj.push(sessionObj);
+              tempObj['unit'] = courseUnit;
+              courseToSessionMap[`${courseName}`] = tempObj;
+            }
+            else{
+              courseToSessionMap[`${courseName}`].push(sessionObj);
+            }
+          }
+        }
+        // make course format object
+        for(let mCourse in courseToSessionMap){
+          let session = courseToSessionMap[mCourse];
+          let unit = courseToSessionMap[mCourse]['unit'];
+          let name = mCourse;
+          let mustHave = 'true';
+          let prefer = 'true';
+          let singleCourse = {};
+          singleCourse['mustHave'] = mustHave;
+          singleCourse['unit'] = unit;
+          singleCourse['prefer'] = prefer;
+          singleCourse['name'] = name;
+          singleCourse['session'] = session;
+          courseObj.push(singleCourse);
+        }
+        data['course'] = courseObj;
+        console.log(data);
+        // let formData = [];
+        // formData['course'] = data;
+        // formData['constraint'] = {};
+        // formData = JSON.stringify(formData);
+          // ajax call to server
+        // $.ajax({
+        //   url : 'http://3.14.82.97',
+        //   type : 'POST',
+        //   data : {data},
+        //   dataType:'json',
+        //   success : function(data) {              
+        //       alert('Data received: '+data);
+        //   },
+        //   error : function(request,error)
+        //   {
+        //       alert("Request: "+JSON.stringify(request));
+        //   }
+        // });
+      });
   });
 
-  $("body")
-  .find(".run-cal")
-    .click(function() {
-      let data = [];
-      for(let course in courseList){
-        if(courseList.hasOwnProperty(course)){
-          data.push(courseList[course])
-        }
-      }
-      data = JSON.stringify(data);
-      console.log(data)
-      //   // ajax call to backend
-    //   $.ajax({
-    //     url : '',
-    //     type : 'POST',
-    //     data : {data},
-    //     dataType:'json',
-    //     success : function(data) {              
-    //         alert('Data: '+data);
-    //     },
-    //     error : function(request,error)
-    //     {
-    //         alert("Request: "+JSON.stringify(request));
-    //     }
-    // });
-    });
 }
 
 // parse courseList into 
@@ -559,7 +604,7 @@ function parseCourseIntoEvents(list){
         let sParts = start.match(/(\d+)\:(\d+)(\w+)/);
         let sHours = /am/i.test(sParts[3]) || sParts[1] == 12? parseInt(sParts[1]) : parseInt(sParts[1]) + 12;
         let sMinutes = parseInt(sParts[2]);
-        let eParts = end.match(/(\d+)\:(\d+)(\w+)/);
+        let eParts = end.match(/(\d+)\:(\d+)(\w+)/); 
         let eHours = /am/i.test(eParts[3]) || eParts[1] == 12? parseInt(eParts[1]) : parseInt(eParts[1]) + 12;
         let eMinutes = parseInt(eParts[2]);
         let startDate = new Date(currDate.getFullYear(), currDate.getMonth(), currDate.getDate(), sHours, sMinutes, 0, 0)
